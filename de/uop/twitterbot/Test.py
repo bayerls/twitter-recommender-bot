@@ -1,6 +1,8 @@
 from recommender import Recommender
 from persistance import UserDao, UserTweetDao, RecommendationDao
 
+from twitterUtil import Twitter
+
 
 listRecInput = []
 
@@ -20,7 +22,9 @@ listRecInput = []
 # if recommendation is not None:
 #     print(recommendation.getTitle())
 
-RecommendationDao.createRecommendation(UserTweetDao.createUserTweet(UserDao.createUser("basti2"), "MessageTweet2"), "recFull")
+# RecommendationDao.createRecommendation(UserTweetDao.createUserTweet(UserDao.createUser("basti2"), "MessageTweet2"), "recFull")
 
+
+Twitter.getMentions()
 
 
