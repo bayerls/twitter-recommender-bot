@@ -25,6 +25,7 @@ class UserTweet(CustomModel):
     created = DateTimeField()
     updated = DateTimeField()
     status = CharField() # new, requested, done
+    rawInput = TextField()
 
 
 class Recommendation(CustomModel):

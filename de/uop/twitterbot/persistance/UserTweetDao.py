@@ -1,13 +1,15 @@
 from persistance import MysqlManager
 import datetime
 
-def createUserTweet(userId, twitterId, tweetInput):
+def createUserTweet(userId, twitterId, tweetInput, rawInput):
     userTweet = MysqlManager.UserTweet()
     userTweet.user = userId
     userTweet.twitterId = twitterId
     userTweet.tweet = tweetInput
     userTweet.created = datetime.datetime.now()
     userTweet.updated = datetime.datetime.now()
+    userTweet.status = "new"
+    userTweet.rawInput = rawInput
     userTweet.save()
 
     return userTweet.id
