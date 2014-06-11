@@ -1,6 +1,6 @@
-from recommender import Recommender
 from persistance import MysqlManager
 from twitterUtil import Twitter
+from recommender import Recommender
 
 
 
@@ -14,7 +14,6 @@ Twitter.getMentions()
 Recommender.getRecommendation()
 
 Twitter.distributeRecommendations()
-
 
 
 

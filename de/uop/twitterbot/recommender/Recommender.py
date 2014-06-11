@@ -26,13 +26,13 @@ def getRecommendation():
 
 
 def getRecTextForTweet(tweet, rec):
-    maxUrlLength = Twitter.getMaxUrlLength()
+    urlLength = min(len(rec.getURI()), Twitter.getMaxUrlLength())
     text = "@" + tweet.user.username + " Look: "
-    prefixSize = len(text) + maxUrlLength + 1
-    sizeLeft = 140 - prefixSize
+    prefixLength = len(text) + urlLength + 1
+    lengthLeft = 140 - prefixLength
 
-    if len(rec.getTitle()) > sizeLeft:
-        desc = rec.getTitle()[0:sizeLeft - 2] + "..."
+    if len(rec.getTitle()) > lengthLeft:
+        desc = rec.getTitle()[0:lengthLeft - 2] + "..."
     else:
         desc = rec.getTitle()
 
