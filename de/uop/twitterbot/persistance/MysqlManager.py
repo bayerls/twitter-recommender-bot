@@ -33,13 +33,12 @@ class Recommendation(CustomModel):
     selectedId = CharField()
     created = DateTimeField()
     updated = DateTimeField()
-    published = BooleanField(default=False)
+    status = CharField() # new, distributed, discarded
     fullRecommendation = TextField()
+    text = CharField()
 
 
-# User.create_table()
-# UserTweet.create_table()
-# Recommendation.create_table()
+
 
 
 

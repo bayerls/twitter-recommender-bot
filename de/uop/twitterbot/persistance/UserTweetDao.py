@@ -33,3 +33,15 @@ def isNewUserTweet(twitterId):
     else:
         return True
 
+def getNewUserTweets():
+    select = MysqlManager.UserTweet.select().where(MysqlManager.UserTweet.status == "new")
+    ut = select.execute()
+
+    return ut
+
+def updateStatus(userTweet, status):
+    userTweet.status = status
+    userTweet.updated = datetime.datetime.now()
+    userTweet.save()
+
+
