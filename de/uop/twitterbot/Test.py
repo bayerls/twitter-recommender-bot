@@ -9,11 +9,15 @@ from recommender import Recommender
 # MysqlManager.Recommendation.create_table()
 
 
-Twitter.getMentions()
+# Twitter.getMentions()
+#
+# Recommender.getRecommendation()
+#
+# Twitter.distributeRecommendations()
 
-Recommender.getRecommendation()
 
-Twitter.distributeRecommendations()
+Twitter.readStream()
+
 
 
 
