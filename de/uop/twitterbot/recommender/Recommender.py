@@ -1,7 +1,6 @@
 import requests
 from persistance import RecommendationDao, UserTweetDao
 import Config
-from twitterUtil import Twitter
 import ast
 
 dev = "http://eexcess-dev.joanneum.at/eexcess-privacy-proxy/api/v1/recommend"
@@ -26,7 +25,8 @@ def getRecommendation():
 
 
 def getRecTextForTweet(tweet, rec):
-    urlLength = min(len(rec.getURI()), Twitter.getMaxUrlLength())
+    twitterMaxLength = 23  # Twitter.getMaxUrlLength()
+    urlLength = min(len(rec.getURI()), twitterMaxLength)
     text = "@" + tweet.user.username + " Look: "
     prefixLength = len(text) + urlLength + 1
     lengthLeft = 140 - prefixLength

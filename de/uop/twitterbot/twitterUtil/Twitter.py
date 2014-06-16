@@ -1,6 +1,7 @@
 from twitter import *
 from persistance import UserDao, UserTweetDao, RecommendationDao
 import Config
+from recommender import Recommender
 
 
 def getMentions():
@@ -19,7 +20,7 @@ def distributeRecommendations():
     recs = RecommendationDao.getNewRecommendations()
 
     for rec in recs:
-        t.statuses.update(status=rec.text)
+        t.statuses.update(status=rec.text, in_reply_to_status_id=rec.userTweet.user.twitterId)  # TODO not working?
         RecommendationDao.updateStatus(rec, "done")
 
 
@@ -33,12 +34,18 @@ def readStream():
     twitter_userstream = TwitterStream(auth=OAuth(Config.accessToken, Config.accessTokenSecret, Config.apiKey, Config.apiSecret), domain='userstream.twitter.com')
 
     for msg in twitter_userstream.user():
-        print(msg)
+        recommend = False
 
-        # TODO this is always a mention?
-        if "text" in msg:
-            userId = UserDao.addUser(msg["user"]["screen_name"], msg["user"]["id"])
-            UserTweetDao.createUserTweet(userId, msg["id"], msg["text"], msg)
+        if "entities" in msg:
+            for mention in msg["entities"]["user_mentions"]:
+                if mention["screen_name"] == Config.name.replace("@", ""):
+                    recommend = True
+
+            if recommend:
+                userId = UserDao.addUser(msg["user"]["screen_name"], msg["user"]["id"])
+                UserTweetDao.createUserTweet(userId, msg["id"], msg["text"], msg)
+                Recommender.getRecommendation()
+                distributeRecommendations()
 
         # 'event': 'follow',
 
