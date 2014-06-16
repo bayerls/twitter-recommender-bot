@@ -1,6 +1,7 @@
 from persistance import MysqlManager
 import datetime
 
+
 def createUserTweet(userId, twitterId, tweetInput, rawInput):
     userTweet = MysqlManager.UserTweet()
     userTweet.user = userId
@@ -25,6 +26,7 @@ def getUserTweetByTwitterId(twitterId):
 
     return userTweet
 
+
 def isNewUserTweet(twitterId):
     tweet = getUserTweetByTwitterId(twitterId)
 
@@ -33,11 +35,13 @@ def isNewUserTweet(twitterId):
     else:
         return True
 
+
 def getNewUserTweets():
     select = MysqlManager.UserTweet.select().where(MysqlManager.UserTweet.status == "new")
     ut = select.execute()
 
     return ut
+
 
 def updateStatus(userTweet, status):
     userTweet.status = status
