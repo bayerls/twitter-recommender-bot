@@ -20,7 +20,7 @@ def distributeRecommendations():
     recs = RecommendationDao.getNewRecommendations()
 
     for rec in recs:
-        t.statuses.update(status=rec.text, in_reply_to_status_id=rec.userTweet.user.twitterId)  # TODO not working?
+        t.statuses.update(status=rec.text, in_reply_to_status_id=rec.userTweet.twitterId)
         RecommendationDao.updateStatus(rec, "done")
 
 
@@ -34,8 +34,10 @@ def readStream():
     twitter_userstream = TwitterStream(auth=OAuth(Config.accessToken, Config.accessTokenSecret, Config.apiKey, Config.apiSecret), domain='userstream.twitter.com')
 
     for msg in twitter_userstream.user():
+        print(msg)
         recommend = False
 
+        # check if the the bot was mentioned in the status update
         if "entities" in msg:
             for mention in msg["entities"]["user_mentions"]:
                 if mention["screen_name"] == Config.name.replace("@", ""):
@@ -55,4 +57,8 @@ def getCurrentLimit():
 
     print(t.application.rate_limit_status())
 
+
+
     #  TODO does statuses update return something? How many remaining updates possible?
+
+

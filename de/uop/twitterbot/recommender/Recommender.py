@@ -3,6 +3,7 @@ from persistance import RecommendationDao, UserTweetDao
 import Config
 import ast
 
+
 dev = "http://eexcess-dev.joanneum.at/eexcess-privacy-proxy/api/v1/recommend"
 payloadPrefix = '{"eexcess-user-profile": {"interests": {"interest": []},"context-list": {"context": ['
 payloadSuffix = ']}}}'
@@ -14,7 +15,11 @@ def getRecommendation():
     for tweet in newTweets:
         UserTweetDao.updateStatus(tweet, "requested")
         recInputList = getRecInputFromTweet(tweet)
-        rec = recommend(recInputList)
+
+        rec = None
+
+        if len(recInputList) > 0:
+            rec = recommend(recInputList)
 
         if rec is not None:
             text = getRecTextForTweet(tweet, rec)
@@ -48,10 +53,16 @@ def getRecInputFromTweet(tweet):
     # print(t["entities"]["user_mentions"])
 
     keywords = getKeywords(tweet.tweet)
+    stopWords = [line.strip() for line in open('english')]
+    filteredKeywords = []
+
+    for keyword in keywords:
+        if keyword.lower() not in stopWords:
+            filteredKeywords.append(keyword)
 
     recInputList = []
 
-    for keyword in keywords:
+    for keyword in filteredKeywords:
         recInput = RecInput()
         recInput.setText(keyword)
         recInput.setWeight(1.0)

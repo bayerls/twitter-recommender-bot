@@ -24,7 +24,7 @@ class UserTweet(CustomModel):
     tweet = CharField()
     created = DateTimeField()
     updated = DateTimeField()
-    status = CharField() # new, requested, done
+    status = CharField()  # new, requested, done
     rawInput = TextField()
 
 
@@ -36,9 +36,3 @@ class Recommendation(CustomModel):
     status = CharField() # new, distributed, discarded
     fullRecommendation = TextField()
     text = CharField()
-
-
-
-
-
-
