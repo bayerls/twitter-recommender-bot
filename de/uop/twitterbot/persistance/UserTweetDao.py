@@ -2,33 +2,33 @@ from persistance import MysqlManager
 import datetime
 
 
-def createUserTweet(userId, twitterId, tweetInput, rawInput):
-    userTweet = MysqlManager.UserTweet()
-    userTweet.user = userId
-    userTweet.twitterId = twitterId
-    userTweet.tweet = tweetInput
-    userTweet.created = datetime.datetime.now()
-    userTweet.updated = datetime.datetime.now()
-    userTweet.status = "new"
-    userTweet.rawInput = rawInput
-    userTweet.save()
+def create_user_tweet(user_id, twitter_id, tweet_input, raw_input):
+    user_tweet = MysqlManager.UserTweet()
+    user_tweet.user = user_id
+    user_tweet.twitterId = twitter_id
+    user_tweet.tweet = tweet_input
+    user_tweet.created = datetime.datetime.now()
+    user_tweet.updated = datetime.datetime.now()
+    user_tweet.status = "new"
+    user_tweet.rawInput = raw_input
+    user_tweet.save()
 
-    return userTweet.id
+    return user_tweet.id
 
 
-def getUserTweetByTwitterId(twitterId):
+def get_user_tweet_by_twitter_id(twitter_id):
 
     try:
-        userTweet = MysqlManager.UserTweet.get(MysqlManager.User.twitterId == twitterId)
-    except Exception:
-        userTweet = None
-        #print("userTweet not found: " + str(twitterId))
+        user_tweet = MysqlManager.UserTweet.get(MysqlManager.User.twitterId == twitter_id)
+    except MysqlManager.UserTweet.DoesNotExist:
+        user_tweet = None
+        #print("user_tweet not found: " + str(twitterId))
 
-    return userTweet
+    return user_tweet
 
 
-def isNewUserTweet(twitterId):
-    tweet = getUserTweetByTwitterId(twitterId)
+def is_new_user_tweet(twitter_id):
+    tweet = get_user_tweet_by_twitter_id(twitter_id)
 
     if tweet is not None:
         return False
@@ -36,16 +36,14 @@ def isNewUserTweet(twitterId):
         return True
 
 
-def getNewUserTweets():
+def get_new_user_tweets():
     select = MysqlManager.UserTweet.select().where(MysqlManager.UserTweet.status == "new")
     ut = select.execute()
 
     return ut
 
 
-def updateStatus(userTweet, status):
-    userTweet.status = status
-    userTweet.updated = datetime.datetime.now()
-    userTweet.save()
-
-
+def update_status(user_tweet, status):
+    user_tweet.status = status
+    user_tweet.updated = datetime.datetime.now()
+    user_tweet.save()

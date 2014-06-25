@@ -2,7 +2,7 @@ from peewee import *
 import Config
 
 
-custom_db = MySQLDatabase(port=Config.databasePort, database=Config.databaseDB, user=Config.databaseUser, passwd=Config.databasePW)
+custom_db = MySQLDatabase(port=Config.database_port, database=Config.database_db, user=Config.database_user, passwd=Config.database_pw)
 
 
 class CustomModel(Model):
@@ -33,6 +33,6 @@ class Recommendation(CustomModel):
     selectedId = CharField()
     created = DateTimeField()
     updated = DateTimeField()
-    status = CharField() # new, distributed, discarded
+    status = CharField()  # new, distributed, discarded
     fullRecommendation = TextField()
     text = CharField()

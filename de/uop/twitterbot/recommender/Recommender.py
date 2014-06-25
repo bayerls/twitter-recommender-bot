@@ -1,43 +1,41 @@
 import requests
 from persistance import RecommendationDao, UserTweetDao
 import Config
-import ast
-
 
 dev = "http://eexcess-dev.joanneum.at/eexcess-privacy-proxy/api/v1/recommend"
-payloadPrefix = '{"eexcess-user-profile": {"interests": {"interest": []},"context-list": {"context": ['
-payloadSuffix = ']}}}'
+payload_prefix = '{"eexcess-user-profile": {"interests": {"interest": []},"context-list": {"context": ['
+payload_suffix = ']}}}'
 
 
-def getRecommendation():
-    newTweets = UserTweetDao.getNewUserTweets()
+def get_recommendation():
+    new_tweets = UserTweetDao.get_new_user_tweets()
 
-    for tweet in newTweets:
-        UserTweetDao.updateStatus(tweet, "requested")
-        recInputList = getRecInputFromTweet(tweet)
+    for tweet in new_tweets:
+        UserTweetDao.update_status(tweet, "requested")
+        rec_input_list = get_rec_input_from_tweet(tweet)
 
         rec = None
 
-        if len(recInputList) > 0:
-            rec = recommend(recInputList)
+        if len(rec_input_list) > 0:
+            rec = recommend(rec_input_list)
 
         if rec is not None:
-            text = getRecTextForTweet(tweet, rec)
-            RecommendationDao.createRecommendation(tweet.id, rec.getFullRec(), text)
-            UserTweetDao.updateStatus(tweet, "done")
+            text = get_rec_text_for_tweet(tweet, rec)
+            RecommendationDao.create_recommendation(tweet.id, rec.getFullRec(), text)
+            UserTweetDao.update_status(tweet, "done")
         else:
-            UserTweetDao.updateStatus(tweet, "noRecommendation")
+            UserTweetDao.update_status(tweet, "noRecommendation")
 
 
-def getRecTextForTweet(tweet, rec):
-    twitterMaxLength = 23  # Twitter.getMaxUrlLength()
-    urlLength = min(len(rec.getURI()), twitterMaxLength)
+def get_rec_text_for_tweet(tweet, rec):
+    twitter_max_length = 23  # Twitter.getMaxUrlLength()
+    url_length = min(len(rec.getURI()), twitter_max_length)
     text = "@" + tweet.user.username + " Look: "
-    prefixLength = len(text) + urlLength + 1
-    lengthLeft = 140 - prefixLength
+    prefix_length = len(text) + url_length + 1
+    length_left = 140 - prefix_length
 
-    if len(rec.getTitle()) > lengthLeft:
-        desc = rec.getTitle()[0:lengthLeft - 2] + "..."
+    if len(rec.getTitle()) > length_left:
+        desc = rec.getTitle()[0:length_left - 2] + "..."
     else:
         desc = rec.getTitle()
 
@@ -46,32 +44,32 @@ def getRecTextForTweet(tweet, rec):
     return text
 
 
-def getRecInputFromTweet(tweet):
+def get_rec_input_from_tweet(tweet):
     # t = ast.literal_eval(tweet.rawInput)
     # print(tweet.rawInput)
     # print(t["entities"]["hashtags"])
     # print(t["entities"]["user_mentions"])
 
-    keywords = getKeywords(tweet.tweet)
-    stopWords = [line.strip() for line in open('english')]
-    filteredKeywords = []
+    keywords = get_keywords(tweet.tweet)
+    stop_words = [line.strip() for line in open('english')]
+    filtered_keywords = []
 
     for keyword in keywords:
-        if keyword.lower() not in stopWords:
-            filteredKeywords.append(keyword)
+        if keyword.lower() not in stop_words:
+            filtered_keywords.append(keyword)
 
-    recInputList = []
+    rec_input_list = []
 
-    for keyword in filteredKeywords:
-        recInput = RecInput()
-        recInput.setText(keyword)
-        recInput.setWeight(1.0)
-        recInputList.append(recInput)
+    for keyword in filtered_keywords:
+        rec_input = RecInput()
+        rec_input.setText(keyword)
+        rec_input.setWeight(1.0)
+        rec_input_list.append(rec_input)
 
-    return recInputList
+    return rec_input_list
 
 
-def getKeywords(tweet):
+def get_keywords(tweet):
     # remove mention of the bot
     tweet = tweet.replace(Config.name, "")
     # remove # and @
@@ -81,9 +79,9 @@ def getKeywords(tweet):
     return tweet.split()
 
 
-def recommend(listRecInput):
+def recommend(list_rec_input):
     #generate payload
-    payload = generatePayload(listRecInput)
+    payload = generate_payload(list_rec_input)
     # print("payload: " + payload)
 
     # Query backend
@@ -91,26 +89,26 @@ def recommend(listRecInput):
     # print("response: " + str(r.json()))
 
     # extract recs
-    recommendation = extractRecommendation(r.json())
+    recommendation = extract_recommendation(r.json())
     # print("recommendation: " + recommendation.getURI() + " - " + recommendation.getTitle())
 
     return recommendation
 
 
-def generatePayload(listRecInput):
-    payload = payloadPrefix
+def generate_payload(list_rec_input):
+    payload = payload_prefix
 
-    for input in listRecInput:
-        payload += '{"weight":"' + str(input.getWeight()) + '","text":"' + input.getText() + '"},'
+    for rec_input in list_rec_input:
+        payload += '{"weight":"' + str(rec_input.getWeight()) + '","text":"' + rec_input.getText() + '"},'
 
     # remove last comma
     payload = payload[:-1]
-    payload += payloadSuffix
+    payload += payload_suffix
 
     return payload
 
 
-def extractRecommendation(json):
+def extract_recommendation(json):
     recommendation = None
 
     if int(json["totalResults"]) > 0:

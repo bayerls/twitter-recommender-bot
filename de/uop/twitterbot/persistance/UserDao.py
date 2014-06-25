@@ -2,10 +2,10 @@ from persistance import MysqlManager
 import datetime
 
 
-def createUser(username, twitterId):
+def create_user(username, twitter_id):
     user = MysqlManager.User()
     user.username = username
-    user.twitterId = twitterId
+    user.twitterId = twitter_id
     user.created = datetime.datetime.now()
     user.updated = datetime.datetime.now()
     user.userStatus = "normal"
@@ -13,44 +13,32 @@ def createUser(username, twitterId):
 
     return user.id
 
-def addUser(username, twitterId):
-    user = getUserByTwitterId(twitterId)
+
+def add_user(username, twitter_id):
+    user = get_user_by_twitter_id(twitter_id)
 
     if user is None:
-        id = createUser(username, twitterId)
+        user_id = create_user(username, twitter_id)
     else:
-        id = user.id
+        user_id = user.id
 
-    return id
-
-
+    return user_id
 
 
-def update(twitterId):
-    user = getUserByTwitterId(twitterId)
+def update(twitter_id):
+    user = get_user_by_twitter_id(twitter_id)
 
     if user is not None:
         user.updated = datetime.datetime.now()
         user.save()
 
 
-
-# def updateUserStatus(username, userStatus):
-#     update = MysqlManager.User.update(userStatus=userStatus).where(MysqlManager.User.username == username)
-#
-#
-#     user.updated = datetime.datetime.now()
-#     update.execute()
-
-
-def getUserByTwitterId(twitterId):
-
+def get_user_by_twitter_id(twitter_id):
 
     try:
-        user = MysqlManager.User.get(MysqlManager.User.twitterId == twitterId)
-    except Exception:
+        user = MysqlManager.User.get(MysqlManager.User.twitterId == twitter_id)
+    except MysqlManager.User.DoesNotExist:
         user = None
         #print("user not found: " + str(twitterId))
 
     return user
-

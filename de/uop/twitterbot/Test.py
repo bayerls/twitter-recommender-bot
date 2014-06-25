@@ -16,8 +16,7 @@ from enum import Enum
 #
 # Twitter.distributeRecommendations()
 
-
-Twitter.readStream()
+Twitter.read_stream()
 
 # class Animals(Enum):
 #     ant = 1

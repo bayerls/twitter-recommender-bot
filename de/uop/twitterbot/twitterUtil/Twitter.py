@@ -4,36 +4,36 @@ import Config
 from recommender import Recommender
 
 
-def getMentions():
-    t = Twitter(auth=OAuth(Config.accessToken, Config.accessTokenSecret, Config.apiKey, Config.apiSecret))
+def get_mentions():
+    t = Twitter(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key, Config.api_secret))
     mentions = t.statuses.mentions_timeline()
 
     for mention in mentions:
-        userId = UserDao.addUser(mention["user"]["screen_name"], mention["user"]["id"])
+        user_id = UserDao.add_user(mention["user"]["screen_name"], mention["user"]["id"])
 
-        if UserTweetDao.isNewUserTweet(mention["id"]):
-            UserTweetDao.createUserTweet(userId, mention["id"], mention["text"], mention)
+        if UserTweetDao.is_new_user_tweet(mention["id"]):
+            UserTweetDao.create_user_tweet(user_id, mention["id"], mention["text"], mention)
 
 
-def distributeRecommendations():
-    t = Twitter(auth=OAuth(Config.accessToken, Config.accessTokenSecret, Config.apiKey, Config.apiSecret))
-    recs = RecommendationDao.getNewRecommendations()
+def distribute_recommendations():
+    t = Twitter(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key, Config.api_secret))
+    recs = RecommendationDao.get_new_recommendations()
 
     for rec in recs:
         t.statuses.update(status=rec.text, in_reply_to_status_id=rec.userTweet.twitterId)
-        RecommendationDao.updateStatus(rec, "done")
+        RecommendationDao.update_status(rec, "done")
 
 
-def getMaxUrlLength():
-    t = Twitter(auth=OAuth(Config.accessToken, Config.accessTokenSecret, Config.apiKey, Config.apiSecret))
+def get_max_url_length():
+    t = Twitter(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key, Config.api_secret))
 
     return t.help.configuration()["short_url_length_https"]
 
 
-def readStream():
-    twitter_userstream = TwitterStream(auth=OAuth(Config.accessToken, Config.accessTokenSecret, Config.apiKey, Config.apiSecret), domain='userstream.twitter.com')
+def read_stream():
+    twitter_user_stream = TwitterStream(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key, Config.api_secret), domain='userstream.twitter.com')
 
-    for msg in twitter_userstream.user():
+    for msg in twitter_user_stream.user():
         print(msg)
         recommend = False
 
@@ -44,20 +44,18 @@ def readStream():
                     recommend = True
 
             if recommend:
-                userId = UserDao.addUser(msg["user"]["screen_name"], msg["user"]["id"])
-                UserTweetDao.createUserTweet(userId, msg["id"], msg["text"], msg)
-                Recommender.getRecommendation()
-                distributeRecommendations()
+                userId = UserDao.add_user(msg["user"]["screen_name"], msg["user"]["id"])
+                UserTweetDao.create_user_tweet(userId, msg["id"], msg["text"], msg)
+                Recommender.get_recommendation()
+                distribute_recommendations()
 
         # 'event': 'follow',
 
 
-def getCurrentLimit():
-    t = Twitter(auth=OAuth(Config.accessToken, Config.accessTokenSecret, Config.apiKey, Config.apiSecret))
+def get_current_limit():
+    t = Twitter(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key, Config.api_secret))
 
     print(t.application.rate_limit_status())
-
-
 
     #  TODO does statuses update return something? How many remaining updates possible?
 
