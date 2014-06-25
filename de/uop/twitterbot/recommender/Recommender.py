@@ -1,5 +1,5 @@
 import requests
-from persistance import RecommendationDao, UserTweetDao
+from persistance import RecommendationDao, UserTweetDao, Enums
 import Config
 
 dev = "http://eexcess-dev.joanneum.at/eexcess-privacy-proxy/api/v1/recommend"
@@ -11,7 +11,7 @@ def get_recommendation():
     new_tweets = UserTweetDao.get_new_user_tweets()
 
     for tweet in new_tweets:
-        UserTweetDao.update_status(tweet, "requested")
+        UserTweetDao.update_status(tweet, Enums.UserTweetStatus.requested)
         rec_input_list = get_rec_input_from_tweet(tweet)
 
         rec = None
@@ -22,9 +22,9 @@ def get_recommendation():
         if rec is not None:
             text = get_rec_text_for_tweet(tweet, rec)
             RecommendationDao.create_recommendation(tweet.id, rec.getFullRec(), text)
-            UserTweetDao.update_status(tweet, "done")
+            UserTweetDao.update_status(tweet, Enums.UserTweetStatus.done)
         else:
-            UserTweetDao.update_status(tweet, "noRecommendation")
+            UserTweetDao.update_status(tweet, Enums.UserTweetStatus.no_recommendation)
 
 
 def get_rec_text_for_tweet(tweet, rec):

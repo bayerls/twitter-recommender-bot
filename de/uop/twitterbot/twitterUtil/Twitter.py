@@ -1,5 +1,5 @@
 from twitter import *
-from persistance import UserDao, UserTweetDao, RecommendationDao
+from persistance import UserDao, UserTweetDao, RecommendationDao, Enums
 import Config
 from recommender import Recommender
 
@@ -21,7 +21,7 @@ def distribute_recommendations():
 
     for rec in recs:
         t.statuses.update(status=rec.text, in_reply_to_status_id=rec.userTweet.twitterId)
-        RecommendationDao.update_status(rec, "done")
+        RecommendationDao.update_status(rec, Enums.RecommendationStatus.done)
 
 
 def get_max_url_length():
@@ -31,7 +31,8 @@ def get_max_url_length():
 
 
 def read_stream():
-    twitter_user_stream = TwitterStream(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key, Config.api_secret), domain='userstream.twitter.com')
+    twitter_user_stream = TwitterStream(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key,
+                                                   Config.api_secret), domain='userstream.twitter.com')
 
     for msg in twitter_user_stream.user():
         print(msg)
@@ -44,8 +45,8 @@ def read_stream():
                     recommend = True
 
             if recommend:
-                userId = UserDao.add_user(msg["user"]["screen_name"], msg["user"]["id"])
-                UserTweetDao.create_user_tweet(userId, msg["id"], msg["text"], msg)
+                user_id = UserDao.add_user(msg["user"]["screen_name"], msg["user"]["id"])
+                UserTweetDao.create_user_tweet(user_id, msg["id"], msg["text"], msg)
                 Recommender.get_recommendation()
                 distribute_recommendations()
 

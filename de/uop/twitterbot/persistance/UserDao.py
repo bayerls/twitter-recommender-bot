@@ -1,4 +1,4 @@
-from persistance import MysqlManager
+from persistance import MysqlManager, Enums
 import datetime
 
 
@@ -8,7 +8,7 @@ def create_user(username, twitter_id):
     user.twitterId = twitter_id
     user.created = datetime.datetime.now()
     user.updated = datetime.datetime.now()
-    user.userStatus = "normal"
+    user.userStatus = Enums.UserStatus.normal.value
     user.save()
 
     return user.id

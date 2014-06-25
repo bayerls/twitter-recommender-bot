@@ -2,7 +2,8 @@ from peewee import *
 import Config
 
 
-custom_db = MySQLDatabase(port=Config.database_port, database=Config.database_db, user=Config.database_user, passwd=Config.database_pw)
+custom_db = MySQLDatabase(port=Config.database_port, database=Config.database_db, user=Config.database_user,
+                          passwd=Config.database_pw)
 
 
 class CustomModel(Model):
@@ -24,7 +25,7 @@ class UserTweet(CustomModel):
     tweet = CharField()
     created = DateTimeField()
     updated = DateTimeField()
-    status = CharField()  # new, requested, done
+    status = CharField()
     rawInput = TextField()
 
 
@@ -33,6 +34,6 @@ class Recommendation(CustomModel):
     selectedId = CharField()
     created = DateTimeField()
     updated = DateTimeField()
-    status = CharField()  # new, distributed, discarded
+    status = CharField()
     fullRecommendation = TextField()
     text = CharField()

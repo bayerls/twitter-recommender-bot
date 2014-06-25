@@ -1,4 +1,4 @@
-from persistance import MysqlManager
+from persistance import MysqlManager, Enums
 import datetime
 
 
@@ -9,7 +9,7 @@ def create_user_tweet(user_id, twitter_id, tweet_input, raw_input):
     user_tweet.tweet = tweet_input
     user_tweet.created = datetime.datetime.now()
     user_tweet.updated = datetime.datetime.now()
-    user_tweet.status = "new"
+    user_tweet.status = Enums.UserTweetStatus.new.value
     user_tweet.rawInput = raw_input
     user_tweet.save()
 
@@ -37,13 +37,15 @@ def is_new_user_tweet(twitter_id):
 
 
 def get_new_user_tweets():
-    select = MysqlManager.UserTweet.select().where(MysqlManager.UserTweet.status == "new")
+    select = MysqlManager.UserTweet.select().where(MysqlManager.UserTweet.status == Enums.UserTweetStatus.new.value)
     ut = select.execute()
 
     return ut
 
 
 def update_status(user_tweet, status):
-    user_tweet.status = status
+    user_tweet.status = status.value
     user_tweet.updated = datetime.datetime.now()
     user_tweet.save()
+
+

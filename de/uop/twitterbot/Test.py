@@ -1,7 +1,7 @@
 from persistance import MysqlManager
 from twitterUtil import Twitter
 from recommender import Recommender
-from enum import Enum
+
 
 
 
@@ -18,13 +18,8 @@ from enum import Enum
 
 Twitter.read_stream()
 
-# class Animals(Enum):
-#     ant = 1
-#     bee = "hello"
-#     cat = 3
-#     dog = 4
-#
-# print(repr(Animals.bee))
+
+
 
 
 
