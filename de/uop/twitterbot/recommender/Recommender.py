@@ -21,7 +21,7 @@ def get_recommendation():
 
         if rec is not None:
             text = get_rec_text_for_tweet(tweet, rec)
-            RecommendationDao.create_recommendation(tweet.id, rec.getFullRec(), text)
+            RecommendationDao.create_recommendation(tweet.id, rec.fullRec, text)
             UserTweetDao.update_status(tweet, Enums.UserTweetStatus.done)
         else:
             UserTweetDao.update_status(tweet, Enums.UserTweetStatus.no_recommendation)
@@ -29,17 +29,17 @@ def get_recommendation():
 
 def get_rec_text_for_tweet(tweet, rec):
     twitter_max_length = 23  # Twitter.getMaxUrlLength()
-    url_length = min(len(rec.getURI()), twitter_max_length)
+    url_length = min(len(rec.uri), twitter_max_length)
     text = "@" + tweet.user.username + " Look: "
     prefix_length = len(text) + url_length + 1
     length_left = 140 - prefix_length
 
-    if len(rec.getTitle()) > length_left:
-        desc = rec.getTitle()[0:length_left - 2] + "..."
+    if len(rec.title) > length_left:
+        desc = rec.title[0:length_left - 2] + "..."
     else:
-        desc = rec.getTitle()
+        desc = rec.title
 
-    text = text + rec.getURI() + " " + desc
+    text = text + rec.uri + " " + desc
 
     return text
 
@@ -62,8 +62,8 @@ def get_rec_input_from_tweet(tweet):
 
     for keyword in filtered_keywords:
         rec_input = RecInput()
-        rec_input.setText(keyword)
-        rec_input.setWeight(1.0)
+        rec_input.text = keyword
+        rec_input.weight = 1.0
         rec_input_list.append(rec_input)
 
     return rec_input_list
@@ -99,7 +99,7 @@ def generate_payload(list_rec_input):
     payload = payload_prefix
 
     for rec_input in list_rec_input:
-        payload += '{"weight":"' + str(rec_input.getWeight()) + '","text":"' + rec_input.getText() + '"},'
+        payload += '{"weight":"' + str(rec_input.weight) + '","text":"' + rec_input.text + '"},'
 
     # remove last comma
     payload = payload[:-1]
@@ -113,42 +113,21 @@ def extract_recommendation(json):
 
     if int(json["totalResults"]) > 0:
         recommendation = Recommendation()
-        recommendation.setURI(json["results"][0]["uri"])
-        recommendation.setTitle(json["results"][0]["title"])
-        recommendation.setFullRec(json)
+        recommendation.uri = json["results"][0]["uri"]
+        recommendation.title = json["results"][0]["title"]
+        recommendation.fullRec = json
 
     return recommendation
 
 
 class Recommendation:
-    def setTitle(self, title):
-        self.title = title
-
-    def getTitle(self):
-        return self.title
-
-    def setURI(self, uri):
-        self.uri = uri
-
-    def getURI(self):
-        return self.uri
-
-    def setFullRec(self, fullRec):
-        self.fullRec = fullRec
-
-    def getFullRec(self):
-        return self.fullRec
+    def __init__(self):
+        self.title = None
+        self.uri = None
+        self.fullRec = None
 
 
 class RecInput:
-    def setText(self, text):
-        self.text = text
-
-    def getText(self):
-        return self.text
-
-    def setWeight(self, weight):
-        self.weight = weight
-
-    def getWeight(self):
-        return self.weight
+    def __init__(self):
+        self.text = None
+        self.weight = None

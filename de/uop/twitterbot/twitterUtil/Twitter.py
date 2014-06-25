@@ -59,5 +59,3 @@ def get_current_limit():
     print(t.application.rate_limit_status())
 
     #  TODO does statuses update return something? How many remaining updates possible?
-
-

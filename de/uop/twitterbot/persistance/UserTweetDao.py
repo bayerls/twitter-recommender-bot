@@ -47,5 +47,3 @@ def update_status(user_tweet, status):
     user_tweet.status = status.value
     user_tweet.updated = datetime.datetime.now()
     user_tweet.save()
-
-
