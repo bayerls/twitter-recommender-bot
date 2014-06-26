@@ -3,7 +3,7 @@ from twitterUtil import Twitter
 from recommender import Recommender
 import logging
 
-logging.basicConfig(filename='twitterBot.log',level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='twitterBot.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 # MysqlManager.User.create_table()

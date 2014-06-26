@@ -6,6 +6,8 @@ import logging
 
 
 def read_stream():
+    """ Listens to the user-stream and reacts to mention events with a recommendation.
+    """
     twitter_user_stream = TwitterStream(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key,
                                                    Config.api_secret), domain='userstream.twitter.com')
 
@@ -27,6 +29,8 @@ def read_stream():
 
 
 def get_mentions():
+    """ Get all mentions from the timeline and store them in the db.
+    """
     t = Twitter(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key, Config.api_secret))
     mentions = t.statuses.mentions_timeline()
 
@@ -38,6 +42,8 @@ def get_mentions():
 
 
 def distribute_recommendations():
+    """ Distribute new recommendations as status updates on twitter.
+    """
     t = Twitter(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key, Config.api_secret))
     recs = RecommendationDao.get_new_recommendations()
 
@@ -46,13 +52,13 @@ def distribute_recommendations():
         RecommendationDao.update_status(rec, Enums.RecommendationStatus.done)
 
 
-def get_max_url_length():
+def __get_max_url_length():
     t = Twitter(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key, Config.api_secret))
 
     return t.help.configuration()["short_url_length_https"]
 
 
-def get_current_limit():
+def __get_current_limit():
     t = Twitter(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key, Config.api_secret))
 
     print(t.application.rate_limit_status())
