@@ -1,5 +1,6 @@
 from persistance import MysqlManager, Enums
 import datetime
+import logging
 
 
 def create_user(username, twitter_id):
@@ -37,8 +38,8 @@ def get_user_by_twitter_id(twitter_id):
 
     try:
         user = MysqlManager.User.get(MysqlManager.User.twitterId == twitter_id)
-    except MysqlManager.User.DoesNotExist:
+    except MysqlManager.User.DoesNotExist as e:
+        logging.exception(e)
         user = None
-        #print("user not found: " + str(twitterId))
 
     return user

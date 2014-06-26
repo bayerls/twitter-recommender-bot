@@ -2,6 +2,28 @@ from twitter import *
 from persistance import UserDao, UserTweetDao, RecommendationDao, Enums
 import Config
 from recommender import Recommender
+import logging
+
+
+def read_stream():
+    twitter_user_stream = TwitterStream(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key,
+                                                   Config.api_secret), domain='userstream.twitter.com')
+
+    for msg in twitter_user_stream.user():
+        logging.info(msg)
+        recommend = False
+
+        # check if the the bot was mentioned in the status update
+        if "entities" in msg:
+            for mention in msg["entities"]["user_mentions"]:
+                if mention["screen_name"] == Config.name.replace("@", ""):
+                    recommend = True
+
+            if recommend:
+                user_id = UserDao.add_user(msg["user"]["screen_name"], msg["user"]["id"])
+                UserTweetDao.create_user_tweet(user_id, msg["id"], msg["text"], msg)
+                Recommender.get_recommendation()
+                distribute_recommendations()
 
 
 def get_mentions():
@@ -28,29 +50,6 @@ def get_max_url_length():
     t = Twitter(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key, Config.api_secret))
 
     return t.help.configuration()["short_url_length_https"]
-
-
-def read_stream():
-    twitter_user_stream = TwitterStream(auth=OAuth(Config.access_token, Config.access_token_secret, Config.api_key,
-                                                   Config.api_secret), domain='userstream.twitter.com')
-
-    for msg in twitter_user_stream.user():
-        print(msg)
-        recommend = False
-
-        # check if the the bot was mentioned in the status update
-        if "entities" in msg:
-            for mention in msg["entities"]["user_mentions"]:
-                if mention["screen_name"] == Config.name.replace("@", ""):
-                    recommend = True
-
-            if recommend:
-                user_id = UserDao.add_user(msg["user"]["screen_name"], msg["user"]["id"])
-                UserTweetDao.create_user_tweet(user_id, msg["id"], msg["text"], msg)
-                Recommender.get_recommendation()
-                distribute_recommendations()
-
-        # 'event': 'follow',
 
 
 def get_current_limit():

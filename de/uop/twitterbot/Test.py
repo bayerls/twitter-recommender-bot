@@ -1,8 +1,9 @@
 from persistance import MysqlManager
 from twitterUtil import Twitter
 from recommender import Recommender
+import logging
 
-
+logging.basicConfig(filename='twitterBot.log',level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 # MysqlManager.User.create_table()
@@ -16,9 +17,12 @@ from recommender import Recommender
 #
 # Twitter.distributeRecommendations()
 
-Twitter.read_stream()
 
-
+try:
+    Twitter.read_stream()
+except Exception as e:
+    print(e)
+    logging.exception(e)
 
 
 
