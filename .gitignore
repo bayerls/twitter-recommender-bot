@@ -56,3 +56,7 @@ docs/_build/
 /.idea/
 
 /de/uop/twitterbot/Config.py
+
+de/uop/twitterbot/stw.ttl
+
+de/uop/twitterbot/stw.nt
