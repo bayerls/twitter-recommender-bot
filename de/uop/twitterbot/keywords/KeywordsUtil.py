@@ -44,7 +44,3 @@ def extract_keywords():
 
 
 extract_keywords()
-
-
-
-
